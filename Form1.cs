@@ -105,51 +105,78 @@ namespace STRIALG_EXTERNAL_SORT
                 sw = new StreamWriter(filename, false);
                 srA = new StreamReader("A.tmp");
                 srB = new StreamReader("B.tmp");
-                for (;!srA.EndOfStream && !srB.EndOfStream;)
+
+                int countleft = 0;
+                int countright = 0;
+                string left = srA.ReadLine();
+                string right = srB.ReadLine();
+
+                for (;left != null && right != null;)
                 {
-                    int countleft = 0;
-                    int countright = 0;
-                    int left = Convert.ToInt32(srA.ReadLine());
-                    int right = Convert.ToInt32(srB.ReadLine());
-                    for (;countleft < (1<<i) && countright < (1<<i);)
+                    res[0]++;
+                    int firstorder = (countleft / (1 << i)).CompareTo(countright / (1 << i));
+                    switch (firstorder)
                     {
-                        res[0]++;
-                        if (left < right)
+                        case -1:
                         {
                             sw.WriteLine(left);
+                            left = srA.ReadLine();
                             countleft++;
-                            if (!srA.EndOfStream && countleft < (1 << i)) left = Convert.ToInt32(srA.ReadLine());
-                            else break;
+                            break;
                         }
-                        else
+                        case 1:
                         {
                             sw.WriteLine(right);
+                            right = srB.ReadLine();
                             countright++;
-                            if (!srB.EndOfStream && countright < (1 << i)) right = Convert.ToInt32(srB.ReadLine());
-                            else break;
+                            break;
+                        }
+                        case 0:
+                        {
+                            if (left == null || right == null) break;
+                            int secondorder = Convert.ToInt32(left).CompareTo(Convert.ToInt32(right));
+                            switch (secondorder)
+                            {
+                                case -1:
+                                {
+                                    sw.WriteLine(left);
+                                    left = srA.ReadLine();
+                                    countleft++;
+                                    break;
+                                }
+                                case 1:
+                                {
+                                    sw.WriteLine(right);
+                                    right = srB.ReadLine();
+                                    countright++;
+                                    break;
+                                }
+                                case 0:
+                                {
+                                    sw.WriteLine(left);
+                                    sw.WriteLine(right);
+                                    left = srA.ReadLine();
+                                    right = srB.ReadLine();
+                                    countleft++;
+                                    countright++;
+                                    break;
+                                }
+                            }
+                            break;
                         }
                     }
-                    for (; !srA.EndOfStream && countleft < (1 << i);)
-                    {
-                        sw.WriteLine(left);
-                        countleft++;
-                        if (!srA.EndOfStream && countleft < (1 << i)) left = Convert.ToInt32(srA.ReadLine());
-                    }
-                    for (; !srB.EndOfStream && countright < (1 << i);)
-                    {
-                        sw.WriteLine(right);
-                        countright++;
-                        if (!srB.EndOfStream && countright < (1 << i)) right = Convert.ToInt32(srB.ReadLine());
-                    }
                 }
-                for (; !srA.EndOfStream;)
+                for (; left != null;)
                 {
-                    sw.WriteLine(srA.ReadLine());
+                    sw.WriteLine(left);
+                    left = srA.ReadLine();
                 }
-                for (; !srB.EndOfStream;)
+                for (; right != null;)
                 {
-                    sw.WriteLine(srB.ReadLine());
+                    sw.WriteLine(right);
+                    right = srB.ReadLine();
                 }
+
                 sw.Close();
                 srA.Close();
                 srB.Close();
